@@ -1,0 +1,3765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFlow — School Management System</title>
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  />
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --sidebar: #0f172a;
+      --sidebar2: #172554;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #e5e7eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ---------- ANIMATIONS ---------- */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.04);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .animate-page {
+      animation: fadeUp .45s ease;
+    }
+
+    .animate-item {
+      animation: fadeUp .55s ease both;
+    }
+
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .pulse-soft {
+      animation: pulseSoft 2.5s infinite;
+    }
+
+    /* ---------- SIDEBAR ---------- */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 270px;
+      height: 100vh;
+      background: linear-gradient(180deg, #0f172a 0%, #172554 100%);
+      color: white;
+      z-index: 1050;
+      overflow-y: auto;
+      transition: .3s ease;
+    }
+
+    .brand {
+      padding: 24px 22px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg,#3b82f6,#06b6d4);
+      font-size: 23px;
+      box-shadow: 0 8px 25px rgba(37,99,235,.35);
+    }
+
+    .nav-section {
+      color: #94a3b8;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+      padding: 18px 20px 7px;
+      text-transform: uppercase;
+    }
+
+    .side-link {
+      margin: 3px 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      cursor: pointer;
+      transition: .25s;
+      user-select: none;
+    }
+
+    .side-link i {
+      font-size: 18px;
+      width: 23px;
+    }
+
+    .side-link:hover {
+      background: rgba(255,255,255,.08);
+      color: white;
+      transform: translateX(3px);
+    }
+
+    .side-link.active {
+      color: white;
+      background: linear-gradient(90deg,rgba(59,130,246,.35),rgba(59,130,246,.15));
+      box-shadow: inset 3px 0 #60a5fa;
+    }
+
+    /* ---------- MAIN ---------- */
+    .main {
+      margin-left: 270px;
+      min-height: 100vh;
+      transition: .3s;
+    }
+
+    .topbar {
+      height: 82px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+    }
+
+    .search-box {
+      width: 355px;
+      position: relative;
+    }
+
+    .search-box input {
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 13px;
+      padding: 12px 15px 12px 43px;
+      width: 100%;
+      outline: none;
+      transition: .2s;
+    }
+
+    .search-box input:focus {
+      background: white;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(59,130,246,.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 12px;
+      color: #64748b;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    /* ---------- CARDS ---------- */
+    .dashboard-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 21px;
+      height: 100%;
+      transition: .25s;
+      box-shadow: 0 4px 16px rgba(15,23,42,.03);
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(15,23,42,.08);
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+    }
+
+    .blue {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .green {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .orange {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .purple {
+      background: #ede9fe;
+      color: #7c3aed;
+    }
+
+    .cyan {
+      background: #cffafe;
+      color: #0891b2;
+    }
+
+    .red {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* ---------- PAGE ---------- */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeUp .35s ease;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      margin-bottom: 25px;
+    }
+
+    /* ---------- TABLE ---------- */
+    .table-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(15,23,42,.03);
+    }
+
+    .table thead th {
+      background: #f8fafc;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 700;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 15px;
+      white-space: nowrap;
+    }
+
+    .table tbody td {
+      padding: 14px 15px;
+      vertical-align: middle;
+      color: #334155;
+    }
+
+    .table tbody tr {
+      transition: .2s;
+    }
+
+    .table tbody tr:hover {
+      background: #f8fbff;
+    }
+
+    /* ---------- AVATAR ---------- */
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg,#3b82f6,#06b6d4);
+      color: white;
+      font-weight: 700;
+    }
+
+    .avatar-sm {
+      width: 35px;
+      height: 35px;
+      font-size: 12px;
+    }
+
+    /* ---------- BADGES ---------- */
+    .status {
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status.present {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status.absent {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .status.paid {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .status.pending {
+      background: #fef3c7;
+      color: #a16207;
+    }
+
+    /* ---------- BUTTONS ---------- */
+    .action-btn {
+      border: none;
+      border-radius: 9px;
+      padding: 7px 11px;
+      transition: .2s;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* ---------- MOBILE ---------- */
+    .mobile-menu {
+      display: none;
+      border: none;
+      background: #f1f5f9;
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.5);
+      z-index: 1040;
+    }
+
+    @media(max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .mobile-menu {
+        display: block;
+      }
+
+      .overlay.show {
+        display: block;
+      }
+
+      .search-box {
+        width: 240px;
+      }
+    }
+
+    @media(max-width: 640px) {
+      .content {
+        padding: 18px;
+      }
+
+      .topbar {
+        padding: 0 15px;
+        gap: 8px;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .topbar-user-text {
+        display: none;
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+    }
+
+    /* ---------- PROGRESS ---------- */
+    .progress {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 20px;
+    }
+
+    .progress-bar {
+      border-radius: 20px;
+    }
+
+    /* ---------- TIMELINE ---------- */
+    .timeline {
+      border-left: 2px solid #dbeafe;
+      padding-left: 20px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 22px;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -27px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      background: #3b82f6;
+      border: 3px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #bfdbfe;
+    }
+
+    /* ---------- HERO ---------- */
+    .hero {
+      background: linear-gradient(135deg,#1d4ed8,#0f766e);
+      color: white;
+      border-radius: 22px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(37,99,235,.2);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      right: -60px;
+      top: -90px;
+      background: rgba(255,255,255,.08);
+    }
+
+    /* ---------- TOAST ---------- */
+    .toast-container {
+      z-index: 2000;
+    }
+
+    /* ---------- MODAL ---------- */
+    .modal-content {
+      border: none;
+      border-radius: 18px;
+      box-shadow: 0 25px 60px rgba(15,23,42,.18);
+    }
+
+    /* ---------- PRINT ---------- */
+    @media print {
+      .sidebar,
+      .topbar,
+      .no-print,
+      .mobile-menu {
+        display: none !important;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .content {
+        padding: 0;
+      }
+
+      .page {
+        display: none !important;
+      }
+
+      #reportsPage {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+
+  <div class="brand">
+    <div class="d-flex align-items-center gap-3">
+      <div class="brand-logo floating">
+        <i class="bi bi-mortarboard-fill"></i>
+      </div>
+      <div>
+        <div class="fw-bold fs-5">EduFlow</div>
+        <small class="text-slate-400">School Management</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section">Main</div>
+
+  <div class="side-link active" data-page="dashboardPage">
+    <i class="bi bi-grid-1x2-fill"></i>
+    <span>Dashboard</span>
+  </div>
+
+  <div class="side-link" data-page="studentsPage">
+    <i class="bi bi-people-fill"></i>
+    <span>Students</span>
+  </div>
+
+  <div class="side-link" data-page="teachersPage">
+    <i class="bi bi-person-workspace"></i>
+    <span>Teachers</span>
+  </div>
+
+  <div class="nav-section">Academic</div>
+
+  <div class="side-link" data-page="attendancePage">
+    <i class="bi bi-calendar-check"></i>
+    <span>Attendance</span>
+  </div>
+
+  <div class="side-link" data-page="examsPage">
+    <i class="bi bi-journal-check"></i>
+    <span>Exams & Results</span>
+  </div>
+
+  <div class="side-link" data-page="timetablePage">
+    <i class="bi bi-calendar3"></i>
+    <span>Timetable</span>
+  </div>
+
+  <div class="side-link" data-page="progressPage">
+    <i class="bi bi-graph-up-arrow"></i>
+    <span>Student Progress</span>
+  </div>
+
+  <div class="nav-section">Administration</div>
+
+  <div class="side-link" data-page="feesPage">
+    <i class="bi bi-currency-rupee"></i>
+    <span>Fees</span>
+  </div>
+
+  <div class="side-link" data-page="transportPage">
+    <i class="bi bi-bus-front-fill"></i>
+    <span>Transport</span>
+  </div>
+
+  <div class="side-link" data-page="notificationsPage">
+    <i class="bi bi-bell-fill"></i>
+    <span>Notifications</span>
+  </div>
+
+  <div class="side-link" data-page="parentPage">
+    <i class="bi bi-house-heart-fill"></i>
+    <span>Parent Portal</span>
+  </div>
+
+  <div class="nav-section">System</div>
+
+  <div class="side-link" data-page="reportsPage">
+    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+    <span>Reports</span>
+  </div>
+
+  <div class="side-link" data-page="settingsPage">
+    <i class="bi bi-gear-fill"></i>
+    <span>Settings</span>
+  </div>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+
+    <button class="mobile-menu me-2" onclick="toggleSidebar()">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+
+    <div class="search-box">
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        id="globalSearch"
+        placeholder="Search students, teachers..."
+        oninput="globalSearch(this.value)"
+      />
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-3">
+
+      <div class="d-none d-md-flex align-items-center gap-2 text-secondary">
+        <span class="rounded-circle bg-success d-inline-block" style="width:10px;height:10px"></span>
+        <span id="liveDateTime">Loading...</span>
+      </div>
+
+      <button class="btn btn-light rounded-circle" onclick="toggleTheme()" title="Dark mode">
+        <i class="bi bi-moon-stars"></i>
+      </button>
+
+      <button class="btn btn-light rounded-circle position-relative" onclick="showNotifications()">
+        <i class="bi bi-bell"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">3</span>
+      </button>
+
+      <div class="d-flex align-items-center gap-2">
+        <div class="avatar">AD</div>
+        <div class="topbar-user-text">
+          <strong>Admin</strong>
+          <div class="small text-secondary">School Administrator</div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+
+  <div class="content">
+
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
+    <section class="page active" id="dashboardPage">
+
+      <div class="hero mb-4 animate-item">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <div class="small opacity-75 mb-2">
+              <i class="bi bi-stars"></i> Academic Year 2026–27
+            </div>
+
+            <h1 class="fw-bold">Good afternoon, Admin 👋</h1>
+
+            <p class="mb-3 opacity-75">
+              Manage your complete school from Pre-KG to Grade 12
+              in one professional dashboard.
+            </p>
+
+            <button class="btn btn-light fw-semibold" onclick="openPage('studentsPage')">
+              <i class="bi bi-people me-1"></i>
+              Manage Students
+            </button>
+
+            <button class="btn btn-outline-light ms-2" onclick="openPage('reportsPage')">
+              <i class="bi bi-file-earmark-text me-1"></i>
+              View Reports
+            </button>
+          </div>
+
+          <div class="col-lg-4 text-center d-none d-lg-block">
+            <i class="bi bi-mortarboard-fill" style="font-size:120px;opacity:.18"></i>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- STATISTICS -->
+      <div class="row g-4 mb-4">
+
+        <div class="col-xl-3 col-md-6 animate-item">
+          <div class="dashboard-card">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="text-secondary small">Total Students</div>
+                <h2 class="fw-bold mt-2 mb-1" id="totalStudents">1248</h2>
+                <span class="text-success small">
+                  <i class="bi bi-arrow-up"></i> 8.4% this year
+                </span>
+              </div>
+              <div class="stat-icon blue">
+                <i class="bi bi-people-fill"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-item">
+          <div class="dashboard-card">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="text-secondary small">Teachers</div>
+                <h2 class="fw-bold mt-2 mb-1">86</h2>
+                <span class="text-success small">
+                  <i class="bi bi-check-circle"></i> Active
+                </span>
+              </div>
+              <div class="stat-icon purple">
+                <i class="bi bi-person-workspace"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-item">
+          <div class="dashboard-card">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="text-secondary small">Today's Attendance</div>
+                <h2 class="fw-bold mt-2 mb-1">94.8%</h2>
+                <span class="text-success small">
+                  <i class="bi bi-arrow-up"></i> 2.1% vs yesterday
+                </span>
+              </div>
+              <div class="stat-icon green">
+                <i class="bi bi-calendar-check-fill"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 animate-item">
+          <div class="dashboard-card">
+            <div class="d-flex justify-content-between">
+              <div>
+                <div class="text-secondary small">Fees Collected</div>
+                <h2 class="fw-bold mt-2 mb-1">₹28.4L</h2>
+                <span class="text-warning small">
+                  91% collection
+                </span>
+              </div>
+              <div class="stat-icon orange">
+                <i class="bi bi-currency-rupee"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="row g-4">
+
+        <!-- QUICK ACTIONS -->
+        <div class="col-xl-4">
+
+          <div class="dashboard-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">Quick Actions</h5>
+                <small class="text-secondary">Frequently used actions</small>
+              </div>
+              <i class="bi bi-lightning-charge-fill text-warning fs-4"></i>
+            </div>
+
+            <div class="d-grid gap-2">
+
+              <button class="btn btn-primary text-start p-3" onclick="openAddStudent()">
+                <i class="bi bi-person-plus-fill me-2"></i>
+                Add New Student
+              </button>
+
+              <button class="btn btn-light text-start p-3" onclick="openPage('attendancePage')">
+                <i class="bi bi-calendar-check me-2 text-success"></i>
+                Take Attendance
+              </button>
+
+              <button class="btn btn-light text-start p-3" onclick="openPage('examsPage')">
+                <i class="bi bi-journal-check me-2 text-primary"></i>
+                Enter Exam Results
+              </button>
+
+              <button class="btn btn-light text-start p-3" onclick="openPage('reportsPage')">
+                <i class="bi bi-file-earmark-pdf me-2 text-danger"></i>
+                Generate Report
+              </button>
+
+              <button class="btn btn-light text-start p-3" onclick="openPage('parentPage')">
+                <i class="bi bi-chat-dots me-2 text-info"></i>
+                Message Parent
+              </button>
+
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- RECENT STUDENTS -->
+        <div class="col-xl-8">
+
+          <div class="dashboard-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 class="fw-bold mb-1">Recent Students</h5>
+                <small class="text-secondary">Recently registered students</small>
+              </div>
+
+              <button class="btn btn-sm btn-outline-primary" onclick="openPage('studentsPage')">
+                View All
+              </button>
+            </div>
+
+            <div class="table-responsive">
+
+              <table class="table align-middle mb-0">
+
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Class</th>
+                    <th>Parent</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody id="recentStudentsBody"></tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STUDENTS
+    ====================================================== -->
+    <section class="page" id="studentsPage">
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+          <div class="page-title">Students</div>
+          <div class="page-subtitle">
+            Manage students from Pre-KG to Grade 12.
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="openAddStudent()">
+          <i class="bi bi-person-plus-fill me-1"></i>
+          Add Student
+        </button>
+
+      </div>
+
+
+      <div class="dashboard-card mb-4">
+
+        <div class="row g-3">
+
+          <div class="col-md-5">
+            <label class="form-label">Search Student</label>
+            <input
+              class="form-control"
+              id="studentSearch"
+              placeholder="Name, ID or parent..."
+              oninput="filterStudents()"
+            />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Class</label>
+            <select class="form-select" id="studentClassFilter" onchange="filterStudents()">
+              <option value="">All Classes</option>
+              <option>Pre-KG</option>
+              <option>LKG</option>
+              <option>UKG</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+              <option>9</option>
+              <option>10</option>
+              <option>11</option>
+              <option>12</option>
+            </select>
+          </div>
+
+          <div class="col-md-2">
+            <label class="form-label">Section</label>
+            <select class="form-select" id="sectionFilter" onchange="filterStudents()">
+              <option value="">All</option>
+              <option>A</option>
+              <option>B</option>
+              <option>C</option>
+            </select>
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-light border w-100" onclick="resetStudentFilter()">
+              <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="table-card">
+
+        <div class="p-3 border-bottom d-flex justify-content-between">
+          <strong>All Students</strong>
+          <span class="text-secondary small" id="studentCount"></span>
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table mb-0">
+
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Student ID</th>
+                <th>Class</th>
+                <th>Parent / Guardian</th>
+                <th>Attendance</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="studentsBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TEACHERS
+    ====================================================== -->
+    <section class="page" id="teachersPage">
+
+      <div class="page-title">Teachers</div>
+      <div class="page-subtitle">Manage teaching staff and class assignments.</div>
+
+      <div class="row g-4" id="teacherCards"></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ATTENDANCE
+    ====================================================== -->
+    <section class="page" id="attendancePage">
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+          <div class="page-title">Attendance</div>
+          <div class="page-subtitle">
+            View and manage attendance for all students.
+          </div>
+        </div>
+
+        <button class="btn btn-success" onclick="markAllPresent()">
+          <i class="bi bi-check2-all"></i>
+          Mark All Present
+        </button>
+
+      </div>
+
+
+      <div class="dashboard-card mb-4">
+
+        <div class="row g-3 align-items-end">
+
+          <div class="col-md-4">
+            <label class="form-label">Date</label>
+            <input type="date" id="attendanceDate" class="form-control">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Class</label>
+            <select class="form-select" id="attendanceClass" onchange="renderAttendance()">
+              <option value="">All Classes</option>
+              <option>Pre-KG</option>
+              <option>LKG</option>
+              <option>UKG</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+              <option>9</option>
+              <option>10</option>
+              <option>11</option>
+              <option>12</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <input
+              class="form-control"
+              placeholder="Search student..."
+              id="attendanceSearch"
+              oninput="renderAttendance()"
+            >
+          </div>
+
+          <div class="col-md-2">
+            <button class="btn btn-primary w-100" onclick="saveAttendance()">
+              Save
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="table-card">
+
+        <div class="p-3 border-bottom d-flex justify-content-between">
+          <strong>All Students Attendance</strong>
+          <span id="attendanceSummary" class="text-success fw-semibold"></span>
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table mb-0">
+
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Previous Attendance</th>
+                <th>Today's Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="attendanceBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         EXAMS
+    ====================================================== -->
+    <section class="page" id="examsPage">
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+          <div class="page-title">Exams & Results</div>
+          <div class="page-subtitle">
+            View examination marks and academic performance.
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="openAddResult()">
+          <i class="bi bi-plus-circle"></i>
+          Add Result
+        </button>
+
+      </div>
+
+
+      <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="text-secondary">Average Score</div>
+            <h2 class="fw-bold mt-2">81.6%</h2>
+            <div class="progress mt-3">
+              <div class="progress-bar bg-primary" style="width:82%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="text-secondary">Students Passed</div>
+            <h2 class="fw-bold mt-2">1,184</h2>
+            <span class="text-success">94.9% pass rate</span>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="text-secondary">Upcoming Exam</div>
+            <h4 class="fw-bold mt-2">Mathematics</h4>
+            <span class="text-secondary">12 September 2026</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="table-card">
+
+        <div class="p-3 border-bottom">
+          <strong>All Students Exam Results</strong>
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table mb-0">
+
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Mathematics</th>
+                <th>Science</th>
+                <th>English</th>
+                <th>Average</th>
+                <th>Grade</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="resultsBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TIMETABLE
+    ====================================================== -->
+    <section class="page" id="timetablePage">
+
+      <div class="page-title">Timetable</div>
+      <div class="page-subtitle">Weekly class schedule.</div>
+
+      <div class="table-card">
+
+        <div class="table-responsive">
+
+          <table class="table text-center mb-0">
+
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td><strong>09:00</strong></td>
+                <td>English</td>
+                <td>Mathematics</td>
+                <td>Science</td>
+                <td>English</td>
+                <td>Mathematics</td>
+              </tr>
+              <tr>
+                <td><strong>10:00</strong></td>
+                <td>Mathematics</td>
+                <td>Science</td>
+                <td>English</td>
+                <td>Computer</td>
+                <td>Science</td>
+              </tr>
+              <tr>
+                <td><strong>11:30</strong></td>
+                <td>Computer</td>
+                <td>Tamil</td>
+                <td>Mathematics</td>
+                <td>Science</td>
+                <td>Social Science</td>
+              </tr>
+              <tr>
+                <td><strong>01:30</strong></td>
+                <td>Social Science</td>
+                <td>English</td>
+                <td>Computer</td>
+                <td>Tamil</td>
+                <td>PT</td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PROGRESS
+    ====================================================== -->
+    <section class="page" id="progressPage">
+
+      <div class="page-title">Student Progress</div>
+      <div class="page-subtitle">
+        Academic growth, attendance and learning progress.
+      </div>
+
+      <div class="row g-4" id="progressCards"></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FEES
+    ====================================================== -->
+    <section class="page" id="feesPage">
+
+      <div class="page-title">Fees Management</div>
+      <div class="page-subtitle">Track school fee payments and pending balances.</div>
+
+      <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="text-secondary">Total Collection</div>
+            <h2 class="fw-bold mt-2">₹28,40,000</h2>
+            <span class="text-success">91% collected</span>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="text-secondary">Pending</div>
+            <h2 class="fw-bold mt-2">₹2,81,000</h2>
+            <span class="text-warning">9% outstanding</span>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="text-secondary">Payment Today</div>
+            <h2 class="fw-bold mt-2">₹86,500</h2>
+            <span class="text-primary">42 transactions</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="table-card">
+
+        <div class="table-responsive">
+
+          <table class="table mb-0">
+
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Total Fee</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="feesBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TRANSPORT
+    ====================================================== -->
+    <section class="page" id="transportPage">
+
+      <div class="page-title">Transport</div>
+      <div class="page-subtitle">School bus and student transport tracking.</div>
+
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="stat-icon blue mb-3">
+              <i class="bi bi-bus-front-fill"></i>
+            </div>
+            <h4 class="fw-bold">Bus Route 01</h4>
+            <p class="text-secondary">Tirunelveli → School</p>
+            <span class="status present">On Route</span>
+            <hr>
+            <div class="small text-secondary">Students</div>
+            <strong>42 Students</strong>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="stat-icon green mb-3">
+              <i class="bi bi-geo-alt-fill"></i>
+            </div>
+            <h4 class="fw-bold">Live Location</h4>
+            <p class="text-secondary">GPS Tracking</p>
+            <span class="status present">Tracking Active</span>
+            <hr>
+            <button class="btn btn-outline-primary w-100" onclick="showToast('GPS tracking opened successfully','success')">
+              <i class="bi bi-map"></i> Track Bus
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="dashboard-card">
+            <div class="stat-icon orange mb-3">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <h4 class="fw-bold">Transport Students</h4>
+            <p class="text-secondary">Registered students</p>
+            <h2 class="fw-bold">328</h2>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         NOTIFICATIONS
+    ====================================================== -->
+    <section class="page" id="notificationsPage">
+
+      <div class="page-title">Notifications</div>
+      <div class="page-subtitle">School announcements and parent communication.</div>
+
+      <div class="dashboard-card">
+
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <strong>Parent meeting reminder</strong>
+            <p class="text-secondary mb-1">
+              Parent-teacher meeting scheduled for Saturday.
+            </p>
+            <small class="text-secondary">10 minutes ago</small>
+          </div>
+
+          <div class="timeline-item">
+            <strong>Exam timetable published</strong>
+            <p class="text-secondary mb-1">
+              September examination timetable has been published.
+            </p>
+            <small class="text-secondary">1 hour ago</small>
+          </div>
+
+          <div class="timeline-item">
+            <strong>Fee reminder</strong>
+            <p class="text-secondary mb-1">
+              Pending fee reminders sent to parents.
+            </p>
+            <small class="text-secondary">Yesterday</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PARENT PORTAL
+    ====================================================== -->
+    <section class="page" id="parentPage">
+
+      <div class="page-title">Parent Portal</div>
+      <div class="page-subtitle">
+        Parent-focused student information and communication.
+      </div>
+
+      <div class="row g-4">
+
+        <div class="col-lg-4">
+
+          <div class="dashboard-card text-center">
+
+            <div class="avatar mx-auto mb-3" style="width:60px;height:60px">
+              RK
+            </div>
+
+            <h4 class="fw-bold mb-1">Raj Kumar</h4>
+
+            <p class="text-secondary">
+              Parent of <strong>Aarav Kumar</strong>
+            </p>
+
+            <span class="status present d-inline-block mb-3">
+              Portal Active
+            </span>
+
+            <div class="d-grid gap-2">
+
+              <button
+                class="btn btn-outline-dark"
+                onclick="messageParent()"
+              >
+                <i class="bi bi-chat"></i>
+                Message Parent
+              </button>
+
+              <button
+                class="btn btn-primary"
+                onclick="viewChildProfile('STU001')"
+              >
+                <i class="bi bi-person-vcard"></i>
+                View Child Profile
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-lg-8">
+
+          <div class="dashboard-card">
+
+            <h5 class="fw-bold mb-4">Child Overview</h5>
+
+            <div class="row g-3">
+
+              <div class="col-md-6">
+
+                <div class="p-4 rounded-4 bg-light">
+
+                  <div class="text-secondary">Attendance</div>
+
+                  <h4 class="fw-bold">96%</h4>
+
+                  <div class="progress">
+                    <div class="progress-bar bg-success" style="width:96%"></div>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="col-md-6">
+
+                <div class="p-4 rounded-4 bg-light">
+
+                  <div class="text-secondary">Academic Score</div>
+
+                  <h4 class="fw-bold">93.7%</h4>
+
+                  <div class="progress">
+                    <div class="progress-bar bg-primary" style="width:94%"></div>
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="col-md-6">
+
+                <div class="p-4 rounded-4 bg-light">
+
+                  <div class="text-secondary">Fee Status</div>
+
+                  <h4 class="fw-bold text-success">Paid</h4>
+
+                  <small class="text-secondary">No outstanding balance</small>
+
+                </div>
+
+              </div>
+
+
+              <div class="col-md-6">
+
+                <div class="p-4 rounded-4 bg-light">
+
+                  <div class="text-secondary">Next Exam</div>
+
+                  <h5 class="fw-bold">Mathematics</h5>
+
+                  <small class="text-secondary">12 September 2026</small>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         REPORTS
+    ====================================================== -->
+    <section class="page" id="reportsPage">
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+
+        <div>
+          <div class="page-title">Reports</div>
+          <div class="page-subtitle">
+            Generate professional school reports.
+          </div>
+        </div>
+
+        <div class="no-print">
+
+          <button class="btn btn-primary me-2" onclick="generateReport()">
+            <i class="bi bi-file-earmark-text"></i>
+            Generate Report
+          </button>
+
+          <button class="btn btn-outline-dark" onclick="window.print()">
+            <i class="bi bi-printer"></i>
+            Print / PDF
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="dashboard-card" id="reportArea">
+
+        <div class="text-center border-bottom pb-4 mb-4">
+
+          <div class="brand-logo mx-auto mb-3 text-white">
+            <i class="bi bi-mortarboard-fill"></i>
+          </div>
+
+          <h2 class="fw-bold">EduFlow International School</h2>
+
+          <p class="text-secondary mb-1">
+            School Management System
+          </p>
+
+          <small class="text-secondary">
+            Academic Year 2026–27
+          </small>
+
+        </div>
+
+
+        <div class="row g-4">
+
+          <div class="col-md-3">
+            <div class="p-3 bg-light rounded-4">
+              <small class="text-secondary">Students</small>
+              <h3 class="fw-bold">1,248</h3>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-3 bg-light rounded-4">
+              <small class="text-secondary">Teachers</small>
+              <h3 class="fw-bold">86</h3>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-3 bg-light rounded-4">
+              <small class="text-secondary">Attendance</small>
+              <h3 class="fw-bold">94.8%</h3>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="p-3 bg-light rounded-4">
+              <small class="text-secondary">Pass Rate</small>
+              <h3 class="fw-bold">94.9%</h3>
+            </div>
+          </div>
+
+        </div>
+
+
+        <hr class="my-4">
+
+        <h5 class="fw-bold mb-3">Class-wise Student Summary</h5>
+
+        <div class="table-responsive">
+
+          <table class="table">
+
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Students</th>
+                <th>Attendance</th>
+                <th>Average Score</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr><td>Pre-KG</td><td>62</td><td>97%</td><td>91%</td></tr>
+              <tr><td>LKG</td><td>74</td><td>96%</td><td>92%</td></tr>
+              <tr><td>UKG</td><td>81</td><td>95%</td><td>93%</td></tr>
+              <tr><td>1–5</td><td>426</td><td>95%</td><td>88%</td></tr>
+              <tr><td>6–8</td><td>308</td><td>94%</td><td>83%</td></tr>
+              <tr><td>9–10</td><td>191</td><td>93%</td><td>82%</td></tr>
+              <tr><td>11–12</td><td>106</td><td>94%</td><td>86%</td></tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div id="reportGenerated" class="mt-4"></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SETTINGS
+    ====================================================== -->
+    <section class="page" id="settingsPage">
+
+      <div class="page-title">Settings</div>
+      <div class="page-subtitle">Manage school system preferences.</div>
+
+      <div class="row g-4">
+
+        <div class="col-lg-6">
+
+          <div class="dashboard-card">
+
+            <h5 class="fw-bold mb-4">School Information</h5>
+
+            <div class="mb-3">
+              <label class="form-label">School Name</label>
+              <input class="form-control" value="EduFlow International School">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Academic Year</label>
+              <select class="form-select">
+                <option>2026–27</option>
+                <option>2027–28</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" onclick="showToast('School settings saved successfully','success')">
+              Save Settings
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-lg-6">
+
+          <div class="dashboard-card">
+
+            <h5 class="fw-bold mb-4">System Preferences</h5>
+
+            <div class="form-check form-switch mb-4">
+              <input class="form-check-input" type="checkbox" checked>
+              <label class="form-check-label">Parent notifications</label>
+            </div>
+
+            <div class="form-check form-switch mb-4">
+              <input class="form-check-input" type="checkbox" checked>
+              <label class="form-check-label">Attendance reminders</label>
+            </div>
+
+            <div class="form-check form-switch mb-4">
+              <input class="form-check-input" type="checkbox" checked>
+              <label class="form-check-label">Fee reminders</label>
+            </div>
+
+            <button class="btn btn-outline-primary" onclick="showToast('Preferences updated','success')">
+              Update Preferences
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+</main>
+
+
+<!-- =====================================================
+     ADD STUDENT MODAL
+====================================================== -->
+<div class="modal fade" id="studentModal" tabindex="-1">
+
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-person-plus-fill text-primary me-2"></i>
+          Add New Student
+        </h5>
+
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <form id="studentForm">
+
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label">Student Name *</label>
+              <input id="newStudentName" class="form-control" required>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Class *</label>
+              <select id="newStudentClass" class="form-select" required>
+                <option value="">Select</option>
+                <option>Pre-KG</option>
+                <option>LKG</option>
+                <option>UKG</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+                <option>11</option>
+                <option>12</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Section</label>
+              <select id="newStudentSection" class="form-select">
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Parent / Guardian *</label>
+              <input id="newParent" class="form-control" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Contact Number</label>
+              <input id="newContact" class="form-control" type="tel">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Date of Birth</label>
+              <input id="newDOB" class="form-control" type="date">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Admission Date</label>
+              <input id="newAdmission" class="form-control" type="date">
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button class="btn btn-light" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button class="btn btn-primary" onclick="addStudent()">
+          <i class="bi bi-check-lg"></i>
+          Add Student
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     STUDENT PROFILE MODAL
+====================================================== -->
+<div class="modal fade" id="profileModal" tabindex="-1">
+
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title fw-bold">
+          Student Profile
+        </h5>
+
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+
+      </div>
+
+      <div class="modal-body" id="profileContent"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MESSAGE MODAL
+====================================================== -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-chat-dots text-primary"></i>
+          Message Parent
+        </h5>
+
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">Parent</label>
+
+        <input
+          id="messageParentName"
+          class="form-control mb-3"
+          value="Raj Kumar"
+          readonly
+        >
+
+        <label class="form-label">Message</label>
+
+        <textarea
+          id="parentMessage"
+          class="form-control"
+          rows="5"
+          placeholder="Type your message..."
+        ></textarea>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button class="btn btn-light" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button class="btn btn-primary" onclick="sendParentMessage()">
+          <i class="bi bi-send"></i>
+          Send Message
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     RESULT MODAL
+====================================================== -->
+<div class="modal fade" id="resultModal" tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title fw-bold">Add Exam Result</h5>
+
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">Student</label>
+
+        <select id="resultStudent" class="form-select mb-3"></select>
+
+        <div class="row g-3">
+
+          <div class="col-4">
+            <label class="form-label">Math</label>
+            <input id="markMath" class="form-control" type="number" min="0" max="100">
+          </div>
+
+          <div class="col-4">
+            <label class="form-label">Science</label>
+            <input id="markScience" class="form-control" type="number" min="0" max="100">
+          </div>
+
+          <div class="col-4">
+            <label class="form-label">English</label>
+            <input id="markEnglish" class="form-control" type="number" min="0" max="100">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button class="btn btn-light" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button class="btn btn-primary" onclick="addResult()">
+          Save Result
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+====================================================== -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+  <div
+    id="appToast"
+    class="toast"
+    role="alert"
+  >
+
+    <div class="toast-header">
+      <i class="bi bi-check-circle-fill text-success me-2"></i>
+      <strong class="me-auto">EduFlow</strong>
+      <button class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+
+    <div class="toast-body" id="toastMessage">
+      Done
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+/* ============================================================
+   DATA
+============================================================ */
+
+let students = [
+  {
+    id:"STU001",
+    name:"Aarav Kumar",
+    class:"10",
+    section:"A",
+    parent:"Raj Kumar",
+    contact:"9876543210",
+    attendance:96,
+    status:"Active"
+  },
+  {
+    id:"STU002",
+    name:"Diya Sharma",
+    class:"8",
+    section:"B",
+    parent:"Anita Sharma",
+    contact:"9876543211",
+    attendance:94,
+    status:"Active"
+  },
+  {
+    id:"STU003",
+    name:"Arjun Raj",
+    class:"12",
+    section:"A",
+    parent:"Ramesh Raj",
+    contact:"9876543212",
+    attendance:91,
+    status:"Active"
+  },
+  {
+    id:"STU004",
+    name:"Meera Devi",
+    class:"5",
+    section:"C",
+    parent:"Suresh Devi",
+    contact:"9876543213",
+    attendance:98,
+    status:"Active"
+  },
+  {
+    id:"STU005",
+    name:"Kavin Kumar",
+    class:"3",
+    section:"A",
+    parent:"Mohan Kumar",
+    contact:"9876543214",
+    attendance:89,
+    status:"Active"
+  },
+  {
+    id:"STU006",
+    name:"Ananya Priya",
+    class:"7",
+    section:"B",
+    parent:"Priya Raj",
+    contact:"9876543215",
+    attendance:95,
+    status:"Active"
+  },
+  {
+    id:"STU007",
+    name:"Rohan Das",
+    class:"11",
+    section:"A",
+    parent:"Vijay Das",
+    contact:"9876543216",
+    attendance:93,
+    status:"Active"
+  },
+  {
+    id:"STU008",
+    name:"Nila Shree",
+    class:"2",
+    section:"A",
+    parent:"Lakshmi Shree",
+    contact:"9876543217",
+    attendance:97,
+    status:"Active"
+  },
+  {
+    id:"STU009",
+    name:"Hari Prasad",
+    class:"9",
+    section:"C",
+    parent:"Prasad Kumar",
+    contact:"9876543218",
+    attendance:88,
+    status:"Active"
+  },
+  {
+    id:"STU010",
+    name:"Ishita Rao",
+    class:"6",
+    section:"A",
+    parent:"Karthik Rao",
+    contact:"9876543219",
+    attendance:96,
+    status:"Active"
+  }
+];
+
+
+let results = [
+  {id:"STU001", math:95, science:92, english:94},
+  {id:"STU002", math:87, science:91, english:89},
+  {id:"STU003", math:96, science:94, english:92},
+  {id:"STU004", math:91, science:88, english:95},
+  {id:"STU005", math:78, science:82, english:85},
+  {id:"STU006", math:93, science:90, english:94},
+  {id:"STU007", math:88, science:92, english:90},
+  {id:"STU008", math:95, science:96, english:97},
+  {id:"STU009", math:74, science:79, english:82},
+  {id:"STU010", math:92, science:94, english:91}
+];
+
+
+const teachers = [
+  ["Priya Menon","Mathematics","Grades 9–12","PM"],
+  ["Arun Kumar","Science","Grades 6–10","AK"],
+  ["Divya Raj","English","Grades 1–8","DR"],
+  ["Karthik S","Computer Science","Grades 8–12","KS"],
+  ["Meena Devi","Tamil","Grades 1–10","MD"],
+  ["Rahul Das","Social Science","Grades 6–12","RD"]
+];
+
+
+/* ============================================================
+   INITIALIZATION
+============================================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const today = new Date().toISOString().split("T")[0];
+
+  document.getElementById("attendanceDate").value = today;
+
+  renderStudents();
+  renderRecentStudents();
+  renderAttendance();
+  renderResults();
+  renderTeachers();
+  renderProgress();
+  renderFees();
+  populateResultStudents();
+
+  updateClock();
+
+  setInterval(updateClock, 1000);
+
+  /* Sidebar navigation */
+  document.querySelectorAll(".side-link").forEach(link => {
+
+    link.addEventListener("click", () => {
+
+      const page = link.dataset.page;
+
+      openPage(page);
+
+      document.querySelectorAll(".side-link")
+        .forEach(x => x.classList.remove("active"));
+
+      link.classList.add("active");
+
+      closeSidebar();
+
+    });
+
+  });
+
+});
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function openPage(pageId) {
+
+  document.querySelectorAll(".page")
+    .forEach(page => page.classList.remove("active"));
+
+  const page = document.getElementById(pageId);
+
+  if(page) {
+    page.classList.add("active");
+  }
+
+  document.querySelectorAll(".side-link")
+    .forEach(link => {
+
+      link.classList.toggle(
+        "active",
+        link.dataset.page === pageId
+      );
+
+    });
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+}
+
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+function toggleSidebar() {
+
+  document.getElementById("sidebar")
+    .classList.toggle("show");
+
+  document.getElementById("overlay")
+    .classList.toggle("show");
+
+}
+
+function closeSidebar() {
+
+  document.getElementById("sidebar")
+    .classList.remove("show");
+
+  document.getElementById("overlay")
+    .classList.remove("show");
+
+}
+
+
+/* ============================================================
+   CLOCK
+============================================================ */
+
+function updateClock() {
+
+  const now = new Date();
+
+  document.getElementById("liveDateTime").textContent =
+    now.toLocaleDateString("en-IN", {
+      day:"2-digit",
+      month:"short",
+      year:"numeric"
+    }) +
+    " " +
+    now.toLocaleTimeString("en-IN", {
+      hour:"2-digit",
+      minute:"2-digit",
+      second:"2-digit"
+    });
+
+}
+
+
+/* ============================================================
+   STUDENTS
+============================================================ */
+
+function renderStudents(list = students) {
+
+  const body = document.getElementById("studentsBody");
+
+  body.innerHTML = "";
+
+  list.forEach((student,index) => {
+
+    const initials = student.name
+      .split(" ")
+      .map(x => x[0])
+      .join("")
+      .substring(0,2)
+      .toUpperCase();
+
+    body.innerHTML += `
+      <tr class="animate-item">
+
+        <td>
+          <div class="d-flex align-items-center gap-2">
+
+            <div class="avatar avatar-sm">
+              ${initials}
+            </div>
+
+            <div>
+              <strong>${student.name}</strong>
+              <div class="small text-secondary">
+                ${student.section} Section
+              </div>
+            </div>
+
+          </div>
+        </td>
+
+        <td>
+          <span class="badge bg-light text-dark">
+            ${student.id}
+          </span>
+        </td>
+
+        <td>
+          ${formatClass(student.class)}
+        </td>
+
+        <td>
+          ${student.parent}
+          <div class="small text-secondary">
+            ${student.contact}
+          </div>
+        </td>
+
+        <td>
+          <strong>${student.attendance}%</strong>
+
+          <div class="progress mt-1" style="width:100px">
+            <div
+              class="progress-bar ${student.attendance >= 90 ? "bg-success" : "bg-warning"}"
+              style="width:${student.attendance}%">
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <span class="status present">
+            ${student.status}
+          </span>
+        </td>
+
+        <td>
+
+          <button
+            class="action-btn bg-primary-subtle text-primary me-1"
+            onclick="viewChildProfile('${student.id}')"
+            title="View profile"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+
+          <button
+            class="action-btn bg-success-subtle text-success me-1"
+            onclick="messageSpecificParent('${student.id}')"
+            title="Message parent"
+          >
+            <i class="bi bi-chat"></i>
+          </button>
+
+          <button
+            class="action-btn bg-danger-subtle text-danger"
+            onclick="deleteStudent('${student.id}')"
+            title="Delete"
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+
+        </td>
+
+      </tr>
+    `;
+
+  });
+
+  document.getElementById("studentCount").textContent =
+    `${list.length} student(s)`;
+
+  document.getElementById("totalStudents").textContent =
+    1248 + Math.max(0, students.length - 10);
+
+}
+
+
+function renderRecentStudents() {
+
+  const body = document.getElementById("recentStudentsBody");
+
+  body.innerHTML = "";
+
+  students.slice(0,5).forEach(student => {
+
+    body.innerHTML += `
+      <tr>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar avatar-sm">
+              ${student.name.substring(0,2).toUpperCase()}
+            </div>
+
+            <strong>${student.name}</strong>
+          </div>
+        </td>
+
+        <td>${formatClass(student.class)} - ${student.section}</td>
+
+        <td>${student.parent}</td>
+
+        <td>
+          <span class="status present">Active</span>
+        </td>
+      </tr>
+    `;
+
+  });
+
+}
+
+
+function formatClass(value) {
+
+  if(["Pre-KG","LKG","UKG"].includes(value))
+    return value;
+
+  return "Grade " + value;
+
+}
+
+
+function filterStudents() {
+
+  const search =
+    document.getElementById("studentSearch")
+      .value
+      .toLowerCase();
+
+  const cls =
+    document.getElementById("studentClassFilter").value;
+
+  const section =
+    document.getElementById("sectionFilter").value;
+
+  const filtered = students.filter(student => {
+
+    const matchSearch =
+      student.name.toLowerCase().includes(search) ||
+      student.id.toLowerCase().includes(search) ||
+      student.parent.toLowerCase().includes(search);
+
+    const matchClass =
+      !cls || student.class === cls;
+
+    const matchSection =
+      !section || student.section === section;
+
+    return matchSearch && matchClass && matchSection;
+
+  });
+
+  renderStudents(filtered);
+}
+
+
+function resetStudentFilter() {
+
+  document.getElementById("studentSearch").value = "";
+  document.getElementById("studentClassFilter").value = "";
+  document.getElementById("sectionFilter").value = "";
+
+  renderStudents();
+
+}
+
+
+function openAddStudent() {
+
+  document.getElementById("studentForm").reset();
+
+  const modal =
+    bootstrap.Modal.getOrCreateInstance(
+      document.getElementById("studentModal")
+    );
+
+  modal.show();
+
+}
+
+
+function addStudent() {
+
+  const name =
+    document.getElementById("newStudentName").value.trim();
+
+  const cls =
+    document.getElementById("newStudentClass").value;
+
+  const section =
+    document.getElementById("newStudentSection").value;
+
+  const parent =
+    document.getElementById("newParent").value.trim();
+
+  const contact =
+    document.getElementById("newContact").value.trim();
+
+  if(!name || !cls || !parent) {
+
+    showToast(
+      "Please fill all required fields.",
+      "danger"
+    );
+
+    return;
+  }
+
+  const newId =
+    "STU" +
+    String(students.length + 1).padStart(3,"0");
+
+  students.unshift({
+
+    id:newId,
+    name:name,
+    class:cls,
+    section:section,
+    parent:parent,
+    contact:contact || "Not provided",
+    attendance:100,
+    status:"Active"
+
+  });
+
+  bootstrap.Modal
+    .getInstance(document.getElementById("studentModal"))
+    .hide();
+
+  renderStudents();
+  renderRecentStudents();
+  renderAttendance();
+  populateResultStudents();
+
+  showToast(
+    `${name} added successfully with ID ${newId}.`,
+    "success"
+  );
+
+}
+
+
+function deleteStudent(id) {
+
+  const student =
+    students.find(x => x.id === id);
+
+  if(!student) return;
+
+  if(!confirm(`Delete ${student.name}?`))
+    return;
+
+  students =
+    students.filter(x => x.id !== id);
+
+  renderStudents();
+  renderRecentStudents();
+  renderAttendance();
+  renderProgress();
+
+  showToast(
+    "Student deleted successfully.",
+    "success"
+  );
+
+}
+
+
+/* ============================================================
+   PROFILE
+============================================================ */
+
+function viewChildProfile(id) {
+
+  const student =
+    students.find(x => x.id === id);
+
+  if(!student) {
+
+    showToast("Student not found.","danger");
+    return;
+
+  }
+
+  const result =
+    results.find(x => x.id === id);
+
+  const average =
+    result
+      ? Math.round(
+          (result.math +
+           result.science +
+           result.english) / 3
+        )
+      : 0;
+
+  document.getElementById("profileContent").innerHTML = `
+
+    <div class="text-center mb-4">
+
+      <div class="avatar mx-auto mb-3" style="width:75px;height:75px;font-size:24px">
+        ${student.name.substring(0,2).toUpperCase()}
+      </div>
+
+      <h3 class="fw-bold">${student.name}</h3>
+
+      <p class="text-secondary">
+        ${student.id} • ${formatClass(student.class)} - ${student.section}
+      </p>
+
+    </div>
+
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <div class="p-3 bg-light rounded-4">
+          <small class="text-secondary">Parent / Guardian</small>
+          <h6 class="fw-bold mt-1">${student.parent}</h6>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="p-3 bg-light rounded-4">
+          <small class="text-secondary">Contact</small>
+          <h6 class="fw-bold mt-1">${student.contact}</h6>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="p-3 bg-light rounded-4">
+          <small class="text-secondary">Attendance</small>
+          <h4 class="fw-bold mt-1">${student.attendance}%</h4>
+          <div class="progress">
+            <div class="progress-bar bg-success"
+                 style="width:${student.attendance}%">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="p-3 bg-light rounded-4">
+          <small class="text-secondary">Academic Average</small>
+          <h4 class="fw-bold mt-1">${average}%</h4>
+          <div class="progress">
+            <div class="progress-bar bg-primary"
+                 style="width:${average}%">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mt-4">
+
+      <h5 class="fw-bold">Academic Information</h5>
+
+      <div class="table-responsive">
+
+        <table class="table">
+
+          <tr>
+            <th>Mathematics</th>
+            <td>${result ? result.math : "Not entered"}</td>
+          </tr>
+
+          <tr>
+            <th>Science</th>
+            <td>${result ? result.science : "Not entered"}</td>
+          </tr>
+
+          <tr>
+            <th>English</th>
+            <td>${result ? result.english : "Not entered"}</td>
+          </tr>
+
+          <tr>
+            <th>Status</th>
+            <td>
+              <span class="status present">Active</span>
+            </td>
+          </tr>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  `;
+
+  bootstrap.Modal
+    .getOrCreateInstance(
+      document.getElementById("profileModal")
+    )
+    .show();
+
+}
+
+
+/* ============================================================
+   PARENT MESSAGE
+============================================================ */
+
+function messageParent() {
+
+  document.getElementById("messageParentName").value =
+    "Raj Kumar";
+
+  document.getElementById("parentMessage").value = "";
+
+  bootstrap.Modal
+    .getOrCreateInstance(
+      document.getElementById("messageModal")
+    )
+    .show();
+
+}
+
+
+function messageSpecificParent(id) {
+
+  const student =
+    students.find(x => x.id === id);
+
+  if(!student) return;
+
+  document.getElementById("messageParentName").value =
+    `${student.parent} — Parent of ${student.name}`;
+
+  document.getElementById("parentMessage").value = "";
+
+  bootstrap.Modal
+    .getOrCreateInstance(
+      document.getElementById("messageModal")
+    )
+    .show();
+
+}
+
+
+function sendParentMessage() {
+
+  const message =
+    document.getElementById("parentMessage").value.trim();
+
+  if(!message) {
+
+    showToast(
+      "Please enter a message.",
+      "danger"
+    );
+
+    return;
+  }
+
+  bootstrap.Modal
+    .getInstance(
+      document.getElementById("messageModal")
+    )
+    .hide();
+
+  showToast(
+    "Message sent to parent successfully.",
+    "success"
+  );
+
+}
+
+
+/* ============================================================
+   ATTENDANCE
+============================================================ */
+
+function renderAttendance() {
+
+  const body =
+    document.getElementById("attendanceBody");
+
+  const cls =
+    document.getElementById("attendanceClass").value;
+
+  const search =
+    document.getElementById("attendanceSearch").value.toLowerCase();
+
+  const filtered =
+    students.filter(student => {
+
+      return (!cls || student.class === cls) &&
+        student.name.toLowerCase().includes(search);
+
+    });
+
+  body.innerHTML = "";
+
+  let present = 0;
+
+  filtered.forEach(student => {
+
+    const key = "attendance_" + student.id;
+
+    let todayStatus =
+      localStorage.getItem(key) || "Present";
+
+    if(todayStatus === "Present")
+      present++;
+
+    body.innerHTML += `
+
+      <tr>
+
+        <td>
+
+          <div class="d-flex align-items-center gap-2">
+
+            <div class="avatar avatar-sm">
+              ${student.name.substring(0,2).toUpperCase()}
+            </div>
+
+            <strong>${student.name}</strong>
+
+          </div>
+
+        </td>
+
+        <td>${formatClass(student.class)}</td>
+
+        <td>
+          <strong>${student.attendance}%</strong>
+        </td>
+
+        <td>
+
+          <span
+            id="status_${student.id}"
+            class="status ${todayStatus === "Present" ? "present" : "absent"}"
+          >
+            ${todayStatus}
+          </span>
+
+        </td>
+
+        <td>
+
+          <button
+            class="btn btn-sm ${todayStatus === "Present" ? "btn-success" : "btn-outline-success"}"
+            onclick="toggleAttendance('${student.id}')"
+          >
+            <i class="bi bi-check-lg"></i>
+            Present
+          </button>
+
+          <button
+            class="btn btn-sm ${todayStatus === "Absent" ? "btn-danger" : "btn-outline-danger"}"
+            onclick="setAbsent('${student.id}')"
+          >
+            <i class="bi bi-x-lg"></i>
+            Absent
+          </button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+  document.getElementById("attendanceSummary").textContent =
+    `${present}/${filtered.length} Present`;
+
+}
+
+
+function toggleAttendance(id) {
+
+  localStorage.setItem(
+    "attendance_" + id,
+    "Present"
+  );
+
+  renderAttendance();
+
+}
+
+
+function setAbsent(id) {
+
+  localStorage.setItem(
+    "attendance_" + id,
+    "Absent"
+  );
+
+  renderAttendance();
+
+}
+
+
+function markAllPresent() {
+
+  students.forEach(student => {
+
+    localStorage.setItem(
+      "attendance_" + student.id,
+      "Present"
+    );
+
+  });
+
+  renderAttendance();
+
+  showToast(
+    "All students marked present.",
+    "success"
+  );
+
+}
+
+
+function saveAttendance() {
+
+  showToast(
+    "Attendance saved successfully.",
+    "success"
+  );
+
+}
+
+
+/* ============================================================
+   RESULTS
+============================================================ */
+
+function getGrade(avg) {
+
+  if(avg >= 90) return "A+";
+  if(avg >= 80) return "A";
+  if(avg >= 70) return "B";
+  if(avg >= 60) return "C";
+  if(avg >= 50) return "D";
+
+  return "F";
+
+}
+
+
+function renderResults() {
+
+  const body =
+    document.getElementById("resultsBody");
+
+  body.innerHTML = "";
+
+  students.forEach(student => {
+
+    const result =
+      results.find(x => x.id === student.id);
+
+    if(!result) {
+
+      body.innerHTML += `
+        <tr>
+          <td>${student.name}</td>
+          <td>${formatClass(student.class)}</td>
+          <td colspan="5" class="text-secondary">
+            Result not entered
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary"
+              onclick="openAddResultFor('${student.id}')">
+              Add
+            </button>
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    const average =
+      Math.round(
+        (result.math +
+         result.science +
+         result.english) / 3
+      );
+
+    const grade = getGrade(average);
+
+    body.innerHTML += `
+
+      <tr>
+
+        <td>
+          <strong>${student.name}</strong>
+          <div class="small text-secondary">
+            ${student.id}
+          </div>
+        </td>
+
+        <td>${formatClass(student.class)}</td>
+
+        <td>${result.math}</td>
+        <td>${result.science}</td>
+        <td>${result.english}</td>
+
+        <td>
+          <strong>${average}%</strong>
+        </td>
+
+        <td>
+          <span class="badge ${
+            average >= 80
+              ? "bg-success"
+              : average >= 50
+                ? "bg-warning text-dark"
+                : "bg-danger"
+          }">
+            ${grade}
+          </span>
+        </td>
+
+        <td>
+
+          <button
+            class="btn btn-sm btn-outline-primary"
+            onclick="viewChildProfile('${student.id}')"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
+
+function populateResultStudents() {
+
+  const select =
+    document.getElementById("resultStudent");
+
+  select.innerHTML = "";
+
+  students.forEach(student => {
+
+    select.innerHTML += `
+      <option value="${student.id}">
+        ${student.name} — ${formatClass(student.class)}
+      </option>
+    `;
+
+  });
+
+}
+
+
+function openAddResult() {
+
+  populateResultStudents();
+
+  document.getElementById("markMath").value = "";
+  document.getElementById("markScience").value = "";
+  document.getElementById("markEnglish").value = "";
+
+  bootstrap.Modal
+    .getOrCreateInstance(
+      document.getElementById("resultModal")
+    )
+    .show();
+
+}
+
+
+function openAddResultFor(id) {
+
+  openAddResult();
+
+  setTimeout(() => {
+
+    document.getElementById("resultStudent").value = id;
+
+  },100);
+
+}
+
+
+function addResult() {
+
+  const id =
+    document.getElementById("resultStudent").value;
+
+  const math =
+    Number(document.getElementById("markMath").value);
+
+  const science =
+    Number(document.getElementById("markScience").value);
+
+  const english =
+    Number(document.getElementById("markEnglish").value);
+
+  if(
+    !Number.isFinite(math) ||
+    !Number.isFinite(science) ||
+    !Number.isFinite(english) ||
+    math < 0 || math > 100 ||
+    science < 0 || science > 100 ||
+    english < 0 || english > 100
+  ) {
+
+    showToast(
+      "Enter valid marks between 0 and 100.",
+      "danger"
+    );
+
+    return;
+
+  }
+
+  const existing =
+    results.find(x => x.id === id);
+
+  if(existing) {
+
+    existing.math = math;
+    existing.science = science;
+    existing.english = english;
+
+  } else {
+
+    results.push({
+      id,
+      math,
+      science,
+      english
+    });
+
+  }
+
+  bootstrap.Modal
+    .getInstance(
+      document.getElementById("resultModal")
+    )
+    .hide();
+
+  renderResults();
+  renderProgress();
+
+  showToast(
+    "Exam result saved successfully.",
+    "success"
+  );
+
+}
+
+
+/* ============================================================
+   PROGRESS
+============================================================ */
+
+function renderProgress() {
+
+  const container =
+    document.getElementById("progressCards");
+
+  container.innerHTML = "";
+
+  students.slice(0,10).forEach(student => {
+
+    const result =
+      results.find(x => x.id === student.id);
+
+    const academic =
+      result
+        ? Math.round(
+            (result.math +
+             result.science +
+             result.english) / 3
+          )
+        : 0;
+
+    container.innerHTML += `
+
+      <div class="col-xl-4 col-md-6">
+
+        <div class="dashboard-card">
+
+          <div class="d-flex align-items-center gap-3 mb-3">
+
+            <div class="avatar">
+              ${student.name.substring(0,2).toUpperCase()}
+            </div>
+
+            <div>
+              <h6 class="fw-bold mb-1">
+                ${student.name}
+              </h6>
+
+              <small class="text-secondary">
+                ${formatClass(student.class)} - ${student.section}
+              </small>
+            </div>
+
+          </div>
+
+          <div class="mb-3">
+
+            <div class="d-flex justify-content-between">
+              <small>Attendance</small>
+              <strong>${student.attendance}%</strong>
+            </div>
+
+            <div class="progress mt-1">
+              <div
+                class="progress-bar bg-success"
+                style="width:${student.attendance}%">
+              </div>
+            </div>
+
+          </div>
+
+          <div>
+
+            <div class="d-flex justify-content-between">
+              <small>Academic Performance</small>
+              <strong>${academic}%</strong>
+            </div>
+
+            <div class="progress mt-1">
+              <div
+                class="progress-bar bg-primary"
+                style="width:${academic}%">
+              </div>
+            </div>
+
+          </div>
+
+          <button
+            class="btn btn-sm btn-light border w-100 mt-3"
+            onclick="viewChildProfile('${student.id}')"
+          >
+            View Detailed Progress
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+/* ============================================================
+   TEACHERS
+============================================================ */
+
+function renderTeachers() {
+
+  const container =
+    document.getElementById("teacherCards");
+
+  container.innerHTML = "";
+
+  teachers.forEach((teacher,index) => {
+
+    container.innerHTML += `
+
+      <div class="col-lg-4 col-md-6">
+
+        <div class="dashboard-card">
+
+          <div class="d-flex align-items-center gap-3">
+
+            <div class="avatar">
+              ${teacher[3]}
+            </div>
+
+            <div>
+              <h5 class="fw-bold mb-1">${teacher[0]}</h5>
+              <div class="text-secondary">${teacher[1]}</div>
+            </div>
+
+          </div>
+
+          <hr>
+
+          <div class="small text-secondary mb-1">
+            Assigned Classes
+          </div>
+
+          <strong>${teacher[2]}</strong>
+
+          <button
+            class="btn btn-outline-primary btn-sm w-100 mt-3"
+            onclick="showToast('Teacher profile opened','success')"
+          >
+            View Profile
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+/* ============================================================
+   FEES
+============================================================ */
+
+function renderFees() {
+
+  const body =
+    document.getElementById("feesBody");
+
+  body.innerHTML = "";
+
+  students.forEach((student,index) => {
+
+    const total = 45000;
+
+    const paid =
+      index % 4 === 0
+        ? 30000
+        : 45000;
+
+    const balance =
+      total - paid;
+
+    body.innerHTML += `
+
+      <tr>
+
+        <td>
+          <strong>${student.name}</strong>
+        </td>
+
+        <td>${formatClass(student.class)}</td>
+
+        <td>₹${total.toLocaleString("en-IN")}</td>
+
+        <td>₹${paid.toLocaleString("en-IN")}</td>
+
+        <td>₹${balance.toLocaleString("en-IN")}</td>
+
+        <td>
+
+          <span class="status ${
+            balance === 0 ? "paid" : "pending"
+          }">
+
+            ${balance === 0 ? "Paid" : "Pending"}
+
+          </span>
+
+        </td>
+
+        <td>
+
+          <button
+            class="btn btn-sm btn-outline-primary"
+            onclick="showToast('Fee receipt generated for ${student.name}','success')"
+          >
+            <i class="bi bi-receipt"></i>
+          </button>
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
+
+/* ============================================================
+   GLOBAL SEARCH
+============================================================ */
+
+function globalSearch(value) {
+
+  value = value.trim().toLowerCase();
+
+  if(!value) return;
+
+  const student =
+    students.find(s =>
+      s.name.toLowerCase().includes(value) ||
+      s.id.toLowerCase() === value
+    );
+
+  if(student) {
+
+    openPage("studentsPage");
+
+    document.getElementById("studentSearch").value =
+      value;
+
+    filterStudents();
+
+  }
+
+}
+
+
+/* ============================================================
+   REPORT
+============================================================ */
+
+function generateReport() {
+
+  const now =
+    new Date().toLocaleString("en-IN");
+
+  document.getElementById("reportGenerated").innerHTML = `
+
+    <div class="alert alert-success">
+
+      <i class="bi bi-check-circle-fill me-2"></i>
+
+      <strong>Report Generated Successfully</strong>
+
+      <div class="small mt-1">
+        Generated on ${now}
+      </div>
+
+    </div>
+
+    <div class="table-responsive">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>Total Students</td>
+            <td>1,248</td>
+            <td><span class="status present">Healthy</span></td>
+          </tr>
+
+          <tr>
+            <td>Attendance</td>
+            <td>94.8%</td>
+            <td><span class="status present">Excellent</span></td>
+          </tr>
+
+          <tr>
+            <td>Academic Pass Rate</td>
+            <td>94.9%</td>
+            <td><span class="status present">Excellent</span></td>
+          </tr>
+
+          <tr>
+            <td>Fee Collection</td>
+            <td>91%</td>
+            <td><span class="status pending">Good</span></td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  `;
+
+  showToast(
+    "School report generated successfully.",
+    "success"
+  );
+
+}
+
+
+/* ============================================================
+   NOTIFICATIONS
+============================================================ */
+
+function showNotifications() {
+
+  openPage("notificationsPage");
+
+}
+
+
+/* ============================================================
+   THEME
+============================================================ */
+
+function toggleTheme() {
+
+  const dark =
+    document.body.classList.toggle("dark-mode");
+
+  if(dark) {
+
+    document.body.style.background = "#0f172a";
+    document.body.style.color = "#e2e8f0";
+
+    document.querySelectorAll(".dashboard-card,.table-card")
+      .forEach(card => {
+
+        card.style.background = "#1e293b";
+        card.style.borderColor = "#334155";
+
+      });
+
+    showToast(
+      "Dark mode enabled.",
+      "success"
+    );
+
+  } else {
+
+    document.body.style.background = "var(--bg)";
+    document.body.style.color = "var(--text)";
+
+    document.querySelectorAll(".dashboard-card,.table-card")
+      .forEach(card => {
+
+        card.style.background = "white";
+        card.style.borderColor = "var(--border)";
+
+      });
+
+    showToast(
+      "Light mode enabled.",
+      "success"
+    );
+
+  }
+
+}
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+function showToast(message,type="success") {
+
+  const toast =
+    document.getElementById("appToast");
+
+  const messageBox =
+    document.getElementById("toastMessage");
+
+  messageBox.textContent = message;
+
+  toast.classList.remove(
+    "text-bg-success",
+    "text-bg-danger",
+    "text-bg-warning"
+  );
+
+  if(type === "danger")
+    toast.classList.add("text-bg-danger");
+
+  else if(type === "warning")
+    toast.classList.add("text-bg-warning");
+
+  else
+    toast.classList.add("text-bg-success");
+
+  bootstrap.Toast
+    .getOrCreateInstance(toast,{
+      delay:3000
+    })
+    .show();
+
+}
+
+
+/* ============================================================
+   KEYBOARD SHORTCUTS
+============================================================ */
+
+document.addEventListener("keydown", event => {
+
+  /* Ctrl + K → search */
+  if(event.ctrlKey && event.key.toLowerCase() === "k") {
+
+    event.preventDefault();
+
+    document.getElementById("globalSearch").focus();
+
+  }
+
+  /* Escape → close sidebar */
+  if(event.key === "Escape") {
+
+    closeSidebar();
+
+  }
+
+});
+
+
+/* ============================================================
+   AUTO SAVE DEMO STATE
+============================================================ */
+
+window.addEventListener("beforeunload", () => {
+
+  localStorage.setItem(
+    "eduflow_students",
+    JSON.stringify(students)
+  );
+
+});
+
+
+/* ============================================================
+   LOAD SAVED STUDENTS
+============================================================ */
+
+try {
+
+  const saved =
+    localStorage.getItem("eduflow_students");
+
+  if(saved) {
+
+    const parsed =
+      JSON.parse(saved);
+
+    if(Array.isArray(parsed) && parsed.length) {
+
+      students = parsed;
+
+    }
+
+  }
+
+} catch(error) {
+
+  console.log("Local storage unavailable.");
+
+}
+
+</script>
+
+</body>
+</html>
